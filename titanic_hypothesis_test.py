@@ -26,7 +26,7 @@ if __name__ == "__main__":
     # seperating male from female
     df_male = df[df["Sex"] == 0].copy()
     df_female = df[df["Sex"] == 1].copy()
-    p = len(df_male) / len(df)
+    p = df["Survived"].sum() / len(df)
 
     # binomal test
     p_val = stats.binom_test(df_male['Survived'].sum(), n = len(df_male['Survived']), p = p, alternative = 'less')
