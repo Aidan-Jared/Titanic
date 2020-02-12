@@ -2,7 +2,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import numpy as np
-from itertools import combinations
 
 def plot_hist(df, title, color):
     df.hist(figsize=(12, 5), sharey=True, grid=False, color=color, alpha=0.5)
