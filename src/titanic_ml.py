@@ -9,16 +9,22 @@ if __name__ == "__main__":
 
     #cleaning the data
     df = pd.read_csv("data/train.csv")
-    df.drop(["PassengerId", "Name", "Cabin", "Embarked", "Ticket"], axis = 1, inplace = True)
-    df.dropna(inplace=True)
+    df_test = pd.read_csv("data/test.csv")
+    df_sur = pd.read_csv("data/gender_submission.csv")
+    df_test = df_test.join(df_sur.set_index("PassengerId"), on = "PassengerId", rsuffix="_other")
+    for i in [df, df_test]:
+        i.drop(["PassengerId", "Name", "Cabin", "Embarked", "Ticket"], axis = 1, inplace = True)
+        i.dropna(inplace=True)
 
     # Putting data into h2o
-    titanic = h2o.H2OFrame(df)
+    train = h2o.H2OFrame(df)
+    test = h2o.H2OFrame(df_test)
     factor_col = ["Pclass", "Sex", "SibSp", "Parch"]
     for i in factor_col:
-        titanic[i] = titanic[i].asfactor()
+        train[i] = train[i].asfactor()
+        test[i] = test[i].asfactor()
     y = "Survived"
-    x = titanic.columns
+    x = train.columns
     del x[0]
 
     # setting the parameters to try out
@@ -35,6 +41,10 @@ if __name__ == "__main__":
         'balance_classes': [True]
         }
     
-    #the model
+    # grid search on GBM
     grid = H2OGridSearch(H2OGradientBoostingEstimator, params)
-    grid.train(x=x, y=y, training_frame=titanic)
+    grid.train(x=x, y=y, training_frame=train)
+
+    # getting the model
+    model = grid.get_grid(sort_by='mse', decreasing=True)[0]
+    pred = model.predict(test)
