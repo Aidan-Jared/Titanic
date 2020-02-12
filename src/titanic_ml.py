@@ -13,13 +13,14 @@ if __name__ == "__main__":
     df_sur = pd.read_csv("data/gender_submission.csv")
     df_test = df_test.join(df_sur.set_index("PassengerId"), on = "PassengerId", rsuffix="_other")
     for i in [df, df_test]:
-        i.drop(["PassengerId", "Name", "Cabin", "Embarked", "Ticket"], axis = 1, inplace = True)
+        i.drop(["PassengerId", "Name", "Cabin", "Embarked", "Ticket", "SibSp"], axis = 1, inplace = True)
+        i["Survived"].replace({1 : "yes", 0 : "no"}, inplace = True)
         i.dropna(inplace=True)
 
     # Putting data into h2o
     train = h2o.H2OFrame(df)
     test = h2o.H2OFrame(df_test)
-    factor_col = ["Pclass", "Sex", "SibSp", "Parch"]
+    factor_col = ["Pclass", "Sex", "Parch"]
     for i in factor_col:
         train[i] = train[i].asfactor()
         test[i] = test[i].asfactor()
@@ -37,7 +38,7 @@ if __name__ == "__main__":
         'seed' : [42],
         'stopping_rounds' : [10],
         'stopping_tolerance' : [1e-5],
-        'stopping_metric' : ['mse'],
+        'stopping_metric' : ['logloss'],
         'balance_classes': [True]
         }
     
@@ -46,5 +47,8 @@ if __name__ == "__main__":
     grid.train(x=x, y=y, training_frame=train)
 
     # getting the model
-    model = grid.get_grid(sort_by='mse', decreasing=True)[0]
+    model = grid.get_grid(sort_by='accuracy', decreasing=True)[0]
+    perf = model.model_performance(test)
     pred = model.predict(test)
+    print(perf.accuracy())
+    print(pred.head())
