@@ -14,13 +14,12 @@ if __name__ == "__main__":
     df_test = df_test.join(df_sur.set_index("PassengerId"), on = "PassengerId", rsuffix="_other")
     for i in [df, df_test]:
         i.drop(["PassengerId", "Name", "Cabin", "Embarked", "Ticket", "SibSp"], axis = 1, inplace = True)
-        i["Survived"].replace({1 : "yes", 0 : "no"}, inplace = True)
         i.dropna(inplace=True)
 
     # Putting data into h2o
     train = h2o.H2OFrame(df)
     test = h2o.H2OFrame(df_test)
-    factor_col = ["Pclass", "Sex", "Parch"]
+    factor_col = ["Pclass", "Sex", "Parch", "Survived"]
     for i in factor_col:
         train[i] = train[i].asfactor()
         test[i] = test[i].asfactor()
@@ -30,16 +29,16 @@ if __name__ == "__main__":
 
     # setting the parameters to try out
     params = {
-        'ntrees' : [10,20,30,40],
+        'ntrees' : [30,40,50,60,70],
         'nbins_cats': [2,4,8],
         'learn_rate' : [1,.1],
         'sample_rate' : [.9, 1],
-        'col_sample_rate' : [.9,.8],
+        'col_sample_rate' : [.9,.8, 1],
         'seed' : [42],
         'stopping_rounds' : [10],
         'stopping_tolerance' : [1e-5],
         'stopping_metric' : ['logloss'],
-        'balance_classes': [True]
+        'balance_classes': [True, False]
         }
     
     # grid search on GBM
@@ -51,4 +50,5 @@ if __name__ == "__main__":
     perf = model.model_performance(test)
     pred = model.predict(test)
     print(perf.accuracy())
-    print(pred.head())
+    pred.head()
+    print("done")
