@@ -33,3 +33,25 @@ The last step was to then run the binomial test in the scipy.stats package.
 This resulted in a p_val of 7.5e-20 which is less than alpha meaning I could reject the null and show that gender was an important part of surviving the Titanic.
 
 ## Machine Learning
+The next step in this project was to make a model that could predict if someone survived the titanic. I decided to use H2O.ai to develope my model due to the features in H2O flow and H2O's gridsearch.
+
+The first step was to clean the data so I went in and removed information that could be corelated with other columns
+
+```python
+    for i in [df, df_test]:
+        i.drop(["PassengerId", "Name", "Cabin", "Embarked", "Ticket", "SibSp"], axis = 1, inplace = True)
+        i.dropna(inplace=True)
+```
+Then I moved the data from pandas to an H2O frame and changed some of the columns in to categoricals using the .asfactor() function. Then I set the y to be the Survived column and the x to be all columns left
+
+```python
+    train = h2o.H2OFrame(df)
+    test = h2o.H2OFrame(df_test)
+    factor_col = ["Pclass", "Sex", "Parch", "Survived"]
+    for i in factor_col:
+        train[i] = train[i].asfactor()
+        test[i] = test[i].asfactor()
+    y = "Survived"
+    x = train.columns
+    del x[0]
+```

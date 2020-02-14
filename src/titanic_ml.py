@@ -46,9 +46,9 @@ if __name__ == "__main__":
     grid.train(x=x, y=y, training_frame=train)
 
     # getting the model
-    model = grid.get_grid(sort_by='accuracy', decreasing=True)[0]
+    model = grid.get_grid(sort_by='logloss')[0]
     perf = model.model_performance(test)
     pred = model.predict(test)
-    print(perf.accuracy())
-    pred.head()
+    print(perf.auc())
+    print(pred.head())
     print("done")
