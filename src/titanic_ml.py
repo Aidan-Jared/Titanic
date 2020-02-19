@@ -30,17 +30,20 @@ if __name__ == "__main__":
     del x[0]
 
     # setting the parameters to try out
-    params = { "ntrees": [10000],
-                'max_depth' : list(range(1,30,1)),
-                'sample_rate': [x/100. for x in range(20,101)],
-                'col_sample_rate' : [x/100. for x in range(20,101)],
-                'col_sample_rate_per_tree': [x/100. for x in range(20,101)],
-                'col_sample_rate_change_per_level': [x/100. for x in range(90,111)],
-                'min_rows': [2**x for x in range(0,int(math.log(train.nrow,2)-1)+1)],
-                'nbins': [2**x for x in range(4,11)],
-                'nbins_cats': [2**x for x in range(4,13)],
+    params = { "ntrees": [20,30,40,50,60],
+                'max_depth' : [2,3,4,5],
+                'sample_rate': [1,.1],
+                'col_sample_rate' : [1,.1],
+                'col_sample_rate_per_tree': [1,.1],
+                'col_sample_rate_change_per_level': [1,.1],
+                'min_rows': [2,3,4,5,6],
+                'nbins': [1,2,3,4,5],
+                'nbins_cats': [1,2,3,4,5],
                 'min_split_improvement': [0,1e-8,1e-6,1e-4],
-                'histogram_type': ["UniformAdaptive","QuantilesGlobal","RoundRobin"]}
+                'learn_rate': [0,.1,.01],
+                'stopping_rounds': [5],
+                'stopping_metric': ['logloss'],
+                'stopping_tolerance': [1e-3]}
     
     # grid search on GBM
     grid = H2OGridSearch(H2OGradientBoostingEstimator, params)
