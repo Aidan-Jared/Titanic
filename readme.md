@@ -55,3 +55,7 @@ Then I moved the data from pandas to an H2O frame and changed some of the column
     x = train.columns
     del x[0]
 ```
+
+To build the model I decided to use a Gradient Boosting model because even though it is prone to overfitting and is more training intensive it tends to produce stronger models than random forests. To tune the model I used the gridsearch function of H2O to compair and contrast multiple sets of hyperparameters.
+
+After the training I can have the gridsearch sort all of the models by their performance on the validatioin dataset and choose the best performing model.

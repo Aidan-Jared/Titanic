@@ -39,7 +39,6 @@ if __name__ == "__main__":
                 'min_rows': [2,3,4,5,6],
                 'nbins': [1,2,3,4,5],
                 'nbins_cats': [1,2,3,4,5],
-                'min_split_improvement': [0,1e-8,1e-6,1e-4],
                 'learn_rate': [0,.1,.01],
                 'stopping_rounds': [5],
                 'stopping_metric': ['logloss'],
