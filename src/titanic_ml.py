@@ -52,6 +52,10 @@ if __name__ == "__main__":
     best_model = grid.get_grid(sort_by='auc', decreasing=True)[0]
     perf = best_model.model_performance(test)
     pred = best_model.predict(test)
-    print(perf.auc())
-    print(pred.head())
+    parameters = best_model.get_params()
+    auc = perf.auc()
+    prediction = pred.head()
+    print(parameters)
+    print(auc)
+    print(prediction)
     print("done")
